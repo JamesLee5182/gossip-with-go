@@ -12,15 +12,20 @@ import (
 )
 
 const (
-	ListUsers = "users.HandleList"
+	ListUsers = "users.List"
 
 	SuccessfulListUsersMessage = "Successfully listed users"
 	ErrRetrieveDatabase        = "Failed to retrieve database in %s"
 	ErrRetrieveUsers           = "Failed to retrieve users in %s"
 	ErrEncodeView              = "Failed to retrieve users in %s"
+
+	CreateUser = "users.Create"
+
+	SuccessfulCreateUserMessage = "Successfully created user"
+	ErrCreateUser               = "Failed to create user"
 )
 
-func HandleList(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
+func List(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
 	db, err := database.GetDB()
 
 	if err != nil {
@@ -42,5 +47,30 @@ func HandleList(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
 			Data: data,
 		},
 		Messages: []string{SuccessfulListUsersMessage},
+	}, nil
+}
+
+func Create(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
+	type CreateUserRequest struct {
+		Username string `json:"username"`
+	}
+
+	var req CreateUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return nil, errors.Wrap(err, ErrCreateUser)
+	}
+
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrRetrieveDatabase, CreateUser))
+	}
+
+	err = users.Create(db, req.Username)
+	if err != nil {
+		return nil, errors.Wrap(err, ErrCreateUser)
+	}
+
+	return &api.Response{
+		Messages: []string{SuccessfulCreateUserMessage},
 	}, nil
 }
