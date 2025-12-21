@@ -6,14 +6,21 @@ import (
 	"net/http"
 
 	"github.com/CVWO/sample-go-app/internal/api"
+	"github.com/CVWO/sample-go-app/internal/handlers/topics"
 	"github.com/CVWO/sample-go-app/internal/handlers/users"
 	"github.com/go-chi/chi/v5"
 )
 
 func GetRoutes() func(r chi.Router) {
 	return func(r chi.Router) {
-		r.Post("/users", Wrap(users.Create))
-		r.Get("/users", Wrap(users.List))
+		r.Post("/users", Wrap(users.HandleCreate))
+		r.Get("/users", Wrap(users.HandleList))
+
+		r.Get("/topics", Wrap(topics.HandleList))
+		r.Post("/topics", Wrap(topics.HandleCreate))
+
+		r.Get("/topics/{id}", Wrap(topics.HandleGet))
+		r.Get("/topics/{id}/posts", Wrap(topics.HandleListPostsByTopic))
 	}
 }
 
@@ -27,7 +34,6 @@ func Wrap(h Handler) http.HandlerFunc {
 			fmt.Printf("[API Error] %s %s: %v\n", req.Method, req.URL.Path, err)
 
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
 		}
 
 		w.WriteHeader(http.StatusOK)

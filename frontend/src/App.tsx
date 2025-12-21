@@ -1,13 +1,21 @@
-import CreateUserForm from "./components/CreateUserForm";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Container from '@mui/material/Container';
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage'
+import TopicPage from './pages/TopicPage'
 
 function App() {
-  var c = CreateUserForm()
-
   return (
-    <div>
-      <h1>Gossip with Go</h1>
-      <div>{c}</div>
-    </div>
+    <BrowserRouter>
+      <Navbar/>
+
+      <Container maxWidth="md" sx={{ py: 3 }}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/topic/:id" element={<TopicPage />} />
+        </Routes>
+      </Container>
+    </BrowserRouter>
   );
 }
 

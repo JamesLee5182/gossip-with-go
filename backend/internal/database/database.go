@@ -19,34 +19,51 @@ var (
 
 func GetDB() (*Database, error) {
 	once.Do(func() {
-		conn, err := sql.Open("sqlite", "./forum.db")
+		db, err := sql.Open("sqlite", "./forum.db")
 		if err != nil {
 			dbError = err
 			return
 		}
 
-		createTableSQL := `
-		CREATE TABLE IF NOT EXISTS users (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			username TEXT NOT NULL UNIQUE,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		);`
-
-		_, err = conn.Exec(createTableSQL)
-		if err != nil {
+		if err := CreateTables(db); err != nil {
 			dbError = err
 			return
 		}
 
-		conn.SetMaxOpenConns(1)
+		db.SetMaxOpenConns(1)
 
-		if err := conn.Ping(); err != nil {
+		if err := db.Ping(); err != nil {
 			dbError = err
 			return
 		}
 
-		dbInstance = &Database{Conn: conn}
+		dbInstance = &Database{Conn: db}
 	})
 
 	return dbInstance, dbError
+}
+
+func CreateTables(db *sql.DB) error {
+	createTables := []string{
+		`CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL UNIQUE,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);`,
+
+		`CREATE TABLE IF NOT EXISTS topics (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			title TEXT NOT NULL UNIQUE,
+			description TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);`,
+	}
+
+	for _, sql := range createTables {
+		if _, err := db.Exec(sql); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
