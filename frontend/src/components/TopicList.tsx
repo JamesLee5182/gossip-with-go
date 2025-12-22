@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Stack from '@mui/material/Stack';
 import TopicCard from './TopicCard';
 import type { Topic } from '../types/models';
 
@@ -27,12 +26,12 @@ export default function TopicList() {
     },[])
 
     return (
-        <Stack>
+        <div>
             {topics?.map((topic) => (
                 <div key={topic.id}>
                     <TopicCard id = {topic.id} title = {topic.title} description = {topic.description} count = {0}/>
                 </div>
             ))}
-        </Stack>
+        </div>
     );
 }

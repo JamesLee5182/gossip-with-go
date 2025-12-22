@@ -27,6 +27,7 @@ const (
 	ErrCreateTopic      = "Failed to create topic in %s"
 	ErrGetTopic         = "Failed to get topic in %s"
 	ErrGetPosts         = "Failed to get posts of topic in %s"
+	ErrCreateReq        = "Invalid create topic request in %s"
 	ErrInvalidTopicId   = "Invalid topic Id encountered in %s"
 
 	SuccessfulGetTopicMessage    = "Successfully got topic"
@@ -128,7 +129,7 @@ type CreateTopicRequest struct {
 func HandleCreate(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
 	var req CreateTopicRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf(ErrCreateTopic, CreateTopic))
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrCreateReq, CreateTopic))
 	}
 
 	db, err := database.GetDB()

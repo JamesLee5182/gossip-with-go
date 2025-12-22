@@ -4,16 +4,17 @@ export default function CreateUserForm() {
     const [username, setUsername] = useState("");
 
     const handleSubmit = async () => {
-        var response = await fetch("http://localhost:8000/users", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username: username }), 
-        });
-
-        var data = await response.json()
-        console.log(data)
+        try {
+            await fetch("http://localhost:8000/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username: username }), 
+            });
+        } catch (err) {
+            console.error(err)
+        }
     };
 
     return (

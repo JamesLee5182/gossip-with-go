@@ -1,9 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import PostList from '../components/PostsList';
 import type { Topic } from '../types/models';
+import CreatePostForm from '../components/CreatePostForm';
+import { Stack } from '@mui/material';
 
 export default function TopicPage() {
-    const { id } = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>()
 
     const [topic, setTopic] = useState<Topic>()
 
@@ -18,11 +21,10 @@ export default function TopicPage() {
                         },
                     })
 
-                    console.log(response)
                     const data = await response.json()
                     setTopic(data.payload.data)
                 } catch (err) {
-                    console.error(err);
+                    console.error(err)
                 }
             }
 
@@ -30,11 +32,14 @@ export default function TopicPage() {
         }
     }, [id]);
 
-    if (!topic) return <div>Loading topic...</div>;
-
+    if (!topic) {
+        return <div>Loading topic...</div>
+    }
+    
     return (
-        <div>
-            posts for {topic.title} go here.
-        </div>
-    );
+        <Stack>
+            <CreatePostForm user_id={1} topic_id={topic.id}/>
+            <PostList topicId={topic.id}/>
+        </Stack>
+    )
 }

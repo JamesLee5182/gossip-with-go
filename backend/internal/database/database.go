@@ -57,6 +57,16 @@ func CreateTables(db *sql.DB) error {
 			description TEXT,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
+
+		`CREATE TABLE IF NOT EXISTS posts (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			title TEXT NOT NULL UNIQUE,
+			content TEXT,
+			user_id INTEGER NOT NULL,
+			topic_id INTEGER NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			edited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);`,
 	}
 
 	for _, sql := range createTables {

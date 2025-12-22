@@ -15,6 +15,15 @@ export type Post = {
   edited_at: string
 };
 
+export type Comment = {
+  id: number;
+  content: string;
+  user_id: number;
+  post_id: number;
+  created_at: string;
+  edited_at: string
+};
+
 export type User = {
   id: number;
   username: string;
