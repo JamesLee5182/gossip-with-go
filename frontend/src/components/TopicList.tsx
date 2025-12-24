@@ -1,29 +1,18 @@
 import { useEffect, useState } from 'react';
 import TopicCard from './TopicCard';
 import type { Topic } from '../types/models';
+import { useQuery } from '@tanstack/react-query';
+import { getTopics } from '../api/topics';
 
 export default function TopicList() {
-    const [topics, setTopics] = useState<Topic[]>([]);
+    const {data: topics, isLoading, error} = useQuery({
+        queryKey: ['topics', 'list', 0],
+        queryFn: getTopics
+    })
 
-    useEffect(() => { 
-        const fetchData = async () => {
-            try {
-                const response = await fetch("http://localhost:8000/topics", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                const data = await response.json()
-                setTopics(data.payload.data)
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        fetchData()
-    },[])
+    if (error) return <div>Error Loading Topics</div>
+    if (isLoading) return <div>Loading Topics</div>
+    if (topics == null || topics.length == 0) return <div>No Topics yet.</div>
 
     return (
         <div>

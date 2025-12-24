@@ -1,39 +1,54 @@
 import { useState } from "react";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { Stack, TextField, Typography, Button } from "@mui/material";
+import { createComment } from "../api/comments";
 
 type CreateCommentProps = {
-    user_id: number,
     post_id: number,
 }
 
-export default function CreateCommentForm({user_id, post_id}: CreateCommentProps) {
+export default function CreateCommentForm({ post_id}: CreateCommentProps) {
     const [content, setContent] = useState<string>()
     
-    const handleSubmit = async () => {
-        try {
-            await fetch("http://localhost:8000/comments", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    content: content,
-                    user_id: user_id,
-                    post_id: post_id,
-                }),
-            })
-        } catch (err) {
-            console.error(err)
-        }
-    }
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: (new_Data: { content: string; user_id: number; post_id: number}) => 
+            createComment(new_Data),
+        
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['comments', 'list', post_id] });
+
+            setContent("");
+
+            alert("Comment created");
+        },
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        if (!content) return;
+        e.preventDefault();
+        mutation.mutate({ content: content, user_id: 1, post_id: post_id });
+    };
 
     return (
         <Stack spacing={2}>
             <Typography>Create New Comment</Typography>
 
-            <TextField label="Content" variant="standard" onChange={(e) => setContent(e.target.value)}/>
+            <TextField 
+                label="Content" 
+                variant="standard" 
+                onChange={(e) => setContent(e.target.value)}
+                value={content}
+            />
 
-            <Button variant="outlined" onClick={handleSubmit}>Submit</Button>
+            <Button 
+                variant="outlined" 
+                onClick={handleSubmit}
+                disabled={mutation.isPending}
+            >
+                Submit
+            </Button>
         </Stack>
     )
 }

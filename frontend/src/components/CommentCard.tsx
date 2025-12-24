@@ -1,16 +1,16 @@
 import { Card, CardContent, Typography, Stack, CardActions, Button, Chip } from "@mui/material"
 import { Link } from "react-router-dom"
+import { formatTime } from '../utils/formatDate';
 
 type CommentProps = {
     id: number
     content: string;
-    user_id: number;
-    post_id: number;
+    username: string;
     created_at: string;
     edited_at: string
 };
 
-export default function CommentCard({id, content, user_id, post_id, created_at, edited_at}: CommentProps) {
+export default function CommentCard({id, content, username, created_at, edited_at}: CommentProps) {
     return (
         <Card sx={{ minWidth: 275, mb: 2 }}>
             <CardContent>
@@ -19,8 +19,8 @@ export default function CommentCard({id, content, user_id, post_id, created_at, 
                         {content}
                     </Typography>
                     <Stack direction="column">
-                        <Chip label={`${created_at}`} color="primary" size="small" />
-                        <Chip label={`From: ${user_id}`} color="primary" size="small" />
+                        <Chip label={`${formatTime(created_at)}`} color="primary" size="small" />
+                        <Chip label={`From: ${username}`} color="primary" size="small" />
                     </Stack>
                 </Stack>
             </CardContent>
