@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
 import TopicCard from './TopicCard';
-import type { Topic } from '../types/models';
 import { useQuery } from '@tanstack/react-query';
 import { getTopics } from '../api/topics';
 

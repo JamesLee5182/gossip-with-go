@@ -21,7 +21,7 @@ export default function CommentList({post_id}: CommentListProps) {
         <div>
             {comments?.map((comment) => (
                 <div key={comment.id}>
-                    <CommentCard id = {comment.id} content = {comment.content} username = {comment.username} created_at={comment.created_at} edited_at={comment.edited_at}/>
+                    <CommentCard content = {comment.content} username = {comment.username} created_at={comment.created_at} edited_at={comment.edited_at}/>
                 </div>
             ))}
         </div>

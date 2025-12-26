@@ -10,21 +10,21 @@ export type Post = {
   title: string;
   content: string;
   user_id: number;
-  username: string;
   topic_id: number;
-  topic_name: string;
   created_at: string;
-  edited_at: string
+  edited_at: string;
+  username: string
+  topic_name: string;
 };
 
 export type Comment = {
   id: number;
   content: string;
   user_id: number;
-  username: string;
   post_id: number;
   created_at: string;
-  edited_at: string
+  edited_at: string;
+  username: string;
 };
 
 export type User = {

@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom"
-import { Stack } from "@mui/material"
+import {Card, CardContent, Stack, Typography} from "@mui/material"
 import CreateCommentForm from "../components/CreateCommentForm"
 import CommentList from "../components/CommentList"
 import { useQuery } from '@tanstack/react-query';
 import { getPost } from '../api/posts';
+import PostCard from "../components/PostCard";
 
 // Shows Post and add comment button at the top and all comments below
 export default function PostPage() {
@@ -21,7 +22,26 @@ export default function PostPage() {
 
     return (
         <Stack>
+            <Typography variant="h3">
+                {post.topic_name}
+            </Typography>
+
+            <Card sx={{ minWidth: 275, mb: 2 }} variant="outlined">
+                <CardContent>
+
+                    <Typography sx={{mb:2}} variant="h4">
+                        {post.title}
+                    </Typography>
+
+                    <Typography variant="body1">
+                        {post.content}
+                    </Typography>
+
+                </CardContent>
+            </Card>
+
             <CreateCommentForm post_id={post.id}/>
+                        
             <CommentList post_id={post.id}/>
         </Stack>
     )

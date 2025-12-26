@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import PostList from '../components/PostsList';
 import CreatePostForm from '../components/CreatePostForm';
-import { Stack } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { getTopic } from '../api/topics';
 
@@ -20,7 +20,16 @@ export default function TopicPage() {
     
     return (
         <Stack>
+            <Typography variant="h3">
+                {topic.title}
+            </Typography>
+
+            <Typography variant="h6">
+                {topic.description}
+            </Typography>
+
             <CreatePostForm topic_id={topic.id}/>
+
             <PostList topic_id={topic.id}/>
         </Stack>
     )

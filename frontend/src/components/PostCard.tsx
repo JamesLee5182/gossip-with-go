@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Stack, CardActions, Button, Chip } from "@mui/material"
+import { Card, CardContent, Typography, Stack, CardActions, Button } from "@mui/material"
 import { Link } from "react-router-dom"
 import { formatTime } from '../utils/formatDate';
 
@@ -19,8 +19,16 @@ export default function PostCard({id, title, content, username, created_at, edit
                     <Typography variant="h5" component="div">
                         {title}
                     </Typography>
-                    <Chip label={`${formatTime(created_at)}`} color="primary" size="small" />
-                    <Chip label={`From: ${username}`} color="primary" size="small" />
+
+                    <Stack direction="column" alignItems="flex-end">
+                        <Typography variant="body2">
+                            {formatTime(created_at)}
+                        </Typography>
+                        <Typography variant="body2">
+                            {`From: ${username}`}
+                        </Typography>
+                    </Stack>
+
                 </Stack>
 
                 <Typography sx={{ mb: 1.5, mt: 1 }} color="text.secondary">

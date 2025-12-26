@@ -3,14 +3,23 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ForumIcon from '@mui/icons-material/Forum';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <AppBar position="static">
       <Toolbar>
-        {/* The Logo / Home Link */}
         <ForumIcon sx={{ mr: 2 }} />
+
         <Typography 
             variant="h6" 
             component={Link} 
@@ -20,13 +29,20 @@ export default function Navbar() {
           Gossip with Go
         </Typography>
 
-        {/* Navigation Links */}
         <Button color="inherit" component={Link} to="/">
           Home
         </Button>
-        <Button color="inherit" component={Link} to="/Login">
-          Login
-        </Button>
+        
+        {user ? (
+          <Button color="inherit" onClick={handleLogout}>
+            Logout
+          </Button>
+        ) : (
+          <Button color="inherit" component={Link} to="/login">
+            Login
+          </Button>
+        )}
+
       </Toolbar>
     </AppBar>
   );

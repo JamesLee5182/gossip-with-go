@@ -7,4 +7,5 @@ type Comment struct {
 	PostId    int    `json:"post_id"`
 	CreatedAt string `json:"created_at"`
 	EditedAt  string `json:"edited_at"`
+	Username  string `json:"username"`
 }

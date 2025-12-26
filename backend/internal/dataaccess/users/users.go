@@ -1,17 +1,24 @@
 package users
 
 import (
+	"database/sql"
+
 	"github.com/CVWO/sample-go-app/internal/database"
 	"github.com/CVWO/sample-go-app/internal/models"
 )
 
-func Get(db *database.Database, id int) (*models.User, error) {
+func GetByUsername(db *database.Database, username string) (*models.User, error) {
 	var user models.User
-	err := db.Conn.QueryRow("SELECT id, username, created_at FROM users WHERE id = ?", id).Scan(
+	err := db.Conn.QueryRow("SELECT id, username, created_at FROM users WHERE username = ?", username).Scan(
 		&user.ID,
 		&user.Username,
 		&user.CreatedAt,
 	)
+
+	// username does not exist
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
 
 	if err != nil {
 		return nil, err

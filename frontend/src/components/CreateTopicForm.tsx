@@ -1,46 +1,42 @@
 import { useState } from "react"
-import { Typography, Card, CardContent, CardActions, TextField} from "@mui/material"
+import {Card, CardContent, CardActions, TextField, Typography} from "@mui/material"
 import { Button } from "@mui/material"
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createPost } from '../api/posts';
-import { useAuth } from "../context/AuthContext";
+import { createTopic } from '../api/topics';
+import { useAuth } from '../context/AuthContext';
 
-type CreatePostProps = {
-    topic_id: number
-}
-
-export default function CreatePostForm({ topic_id }: CreatePostProps) {
+export default function CreateTopicForm() {
     const [title, setTitle] = useState("")
-    const [content, setContent] = useState("")
+    const [description, setDescription] = useState("")
 
     const { user } = useAuth()
 
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
     const mutation = useMutation({
-        mutationFn: (new_Data: { title: string; content: string; user_id: number; topic_id: number}) => 
-            createPost(new_Data),
+        mutationFn: (new_Data: { title: string; description: string}) => 
+            createTopic(new_Data),
         
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['posts', 'detail', topic_id] });
+            queryClient.invalidateQueries({ queryKey: ['topics', 'list', 0] })
 
-            setTitle("");
-            setContent("");
+            setTitle("")
+            setDescription("")
 
-            alert("Post created");
+            alert("Topic created")
         },
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         if (!user) return
 
-        if (!title.trim() || !content.trim()) return
+        if (!title.trim() || !description.trim()) return
         e.preventDefault()
-        mutation.mutate({ title: title, content: content, user_id: user.id, topic_id: topic_id })
+        mutation.mutate({ title: title, description: description })
     };
 
     if (!user) {
-        return <Typography>Login to create posts</Typography>
+        return <Typography>Login to create topics</Typography>;
     }
 
     return (
@@ -48,7 +44,7 @@ export default function CreatePostForm({ topic_id }: CreatePostProps) {
             <form onSubmit={handleSubmit}>
                 <CardContent>
                     <Typography variant="body1">
-                        Create New Post
+                        Create New Topic
                     </Typography>
 
                     <TextField 
@@ -63,8 +59,8 @@ export default function CreatePostForm({ topic_id }: CreatePostProps) {
                         fullWidth
                         label="Description" 
                         variant="standard" 
-                        onChange={(e) => setContent(e.target.value)}
-                        value={content}
+                        onChange={(e) => setDescription(e.target.value)}
+                        value={description}
                     />
                 </CardContent>
 

@@ -28,7 +28,7 @@ export const getTopics = async (): Promise<Topic[]> => {
     return data.payload.data
 }
 
-export const createTopic = async (topic_Data: {title: string}) => {
+export const createTopic = async (topic_Data: {title: string, description: string}) => {
     const response = await fetch(`${BASE_URL}/topics`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

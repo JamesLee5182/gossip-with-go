@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/CVWO/sample-go-app/internal/api"
+	"github.com/CVWO/sample-go-app/internal/handlers/comments"
 	"github.com/CVWO/sample-go-app/internal/handlers/posts"
 	"github.com/CVWO/sample-go-app/internal/handlers/topics"
 	"github.com/CVWO/sample-go-app/internal/handlers/users"
@@ -14,6 +15,7 @@ import (
 
 func GetRoutes() func(r chi.Router) {
 	return func(r chi.Router) {
+		r.Post("/login", Wrap(users.HandleLogin))
 		r.Post("/users", Wrap(users.HandleCreate))
 		r.Get("/users", Wrap(users.HandleList))
 
@@ -26,6 +28,8 @@ func GetRoutes() func(r chi.Router) {
 		r.Get("/posts/{id}", Wrap(posts.HandleGet))
 		r.Get("/posts/{id}/comments", Wrap(posts.HandleListCommentsByPost))
 		r.Post("/posts", Wrap(posts.HandleCreate))
+
+		r.Post("/comments", Wrap(comments.HandleCreate))
 	}
 }
 

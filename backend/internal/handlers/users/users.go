@@ -13,21 +13,68 @@ import (
 )
 
 const (
+	LoginUser  = "users.HandleLogin"
 	ListUsers  = "users.HandleList"
 	CreateUser = "users.HandleCreate"
 
-	ErrRetrieveDatabase = "Failed to retrieve database in %s"
-	ErrRetrieveUsers    = "Failed to retrieve users in %s"
-	ErrEncodeView       = "Failed to encode users in %s"
-	ErrCreateUser       = "Failed to create user in %s"
+	ErrRetrieveDatabase    = "Failed to retrieve database in %s"
+	ErrRetrieveUsers       = "Failed to retrieve users in %s"
+	ErrEncodeView          = "Failed to encode users in %s"
+	ErrCreateUser          = "Failed to create user in %s"
+	ErrInvalidLoginRequest = "Invalid login request in %s"
 
+	SuccessfulLoginUserMessage  = "Successfully logged in user"
 	SuccessfulListUsersMessage  = "Successfully listed users"
 	SuccessfulCreateUserMessage = "Successfully created user"
 )
 
+type LoginRequest struct {
+	Username string `json:"username"`
+}
+
+func HandleLogin(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrInvalidLoginRequest, LoginUser))
+	}
+
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrRetrieveDatabase, LoginUser))
+	}
+
+	user, err := users.GetByUsername(db, req.Username)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrRetrieveUsers, LoginUser))
+	}
+
+	// create new user
+	if user == nil {
+		var newUser = models.User{
+			Username: req.Username,
+		}
+
+		user, err = users.Create(db, newUser)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf(ErrCreateUser, LoginUser))
+		}
+	}
+
+	data, err := json.Marshal(user)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrEncodeView, LoginUser))
+	}
+
+	return &api.Response{
+		Payload: api.Payload{
+			Data: data,
+		},
+		Messages: []string{SuccessfulLoginUserMessage},
+	}, nil
+}
+
 func HandleList(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
 	db, err := database.GetDB()
-
 	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf(ErrRetrieveDatabase, ListUsers))
 	}
