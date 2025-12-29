@@ -65,3 +65,8 @@ func Create(db *database.Database, user models.User) (*models.User, error) {
 
 	return &newUser, nil
 }
+
+func Delete(db *database.Database, id int) error {
+	_, err := db.Conn.Exec("DELETE FROM users WHERE id = ?", id)
+	return err
+}

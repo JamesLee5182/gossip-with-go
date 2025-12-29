@@ -10,11 +10,10 @@ export default function CreateTopicForm() {
     const [description, setDescription] = useState("")
 
     const { user } = useAuth()
-
     const queryClient = useQueryClient()
 
     const mutation = useMutation({
-        mutationFn: (new_Data: { title: string; description: string}) => 
+        mutationFn: (new_Data: { title: string; description: string, user_id: number}) => 
             createTopic(new_Data),
         
         onSuccess: () => {
@@ -32,7 +31,7 @@ export default function CreateTopicForm() {
 
         if (!title.trim() || !description.trim()) return
         e.preventDefault()
-        mutation.mutate({ title: title, description: description })
+        mutation.mutate({ title: title, description: description, user_id: user.id })
     };
 
     if (!user) {

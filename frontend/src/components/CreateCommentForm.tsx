@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { Card, Stack, TextField, Typography, Button, CardContent, CardActions, CardHeader } from "@mui/material";
+import { Card, TextField, Typography, Button, CardContent, CardActions } from "@mui/material";
 import { createComment } from "../api/comments";
 import { useAuth } from "../context/AuthContext";
 

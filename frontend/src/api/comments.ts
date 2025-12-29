@@ -3,6 +3,7 @@ import type { Comment } from "../types/models";
 
 const ErrFetchComment = "Error fetching comments"
 const ErrCreateComment = "Error creating posts"
+const ErrDeleteComment = "Error deleting posts"
 
 export const getCommentsByPost = async (post_id: number): Promise<Comment[]> => {
     const response = await fetch(`${BASE_URL}/posts/${post_id}/comments`, {
@@ -12,8 +13,8 @@ export const getCommentsByPost = async (post_id: number): Promise<Comment[]> => 
 
     if (!response.ok) throw new Error(ErrFetchComment)
 
-    const data = await response.json();
-    return data.payload.data; 
+    const data = await response.json()
+    return data.payload.data
 };
 
 export const createComment = async (comment_Data: { content: string; user_id: number; post_id: number}) => {
@@ -25,5 +26,15 @@ export const createComment = async (comment_Data: { content: string; user_id: nu
 
     if (!response.ok) throw new Error(ErrCreateComment)
     
-    return response.json();
+    return response.json()
 };
+
+export const deleteComment = async (id: string) => {
+    const response = await fetch(`${BASE_URL}/comments/${id}`, {
+        method: "DELETE",
+    })
+
+    if (!response.ok) throw new Error(ErrDeleteComment)
+
+    return response.json()
+}

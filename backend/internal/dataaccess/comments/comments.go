@@ -77,3 +77,8 @@ func Create(db *database.Database, comment models.Comment) (*models.Comment, err
 
 	return &newComment, nil
 }
+
+func Delete(db *database.Database, id int) error {
+	_, err := db.Conn.Exec("DELETE FROM comments WHERE id = ?", id)
+	return err
+}

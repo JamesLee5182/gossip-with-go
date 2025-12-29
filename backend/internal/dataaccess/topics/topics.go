@@ -7,10 +7,11 @@ import (
 
 func Get(db *database.Database, id int) (*models.Topic, error) {
 	var topic models.Topic
-	err := db.Conn.QueryRow("SELECT id, title, description, created_at FROM topics WHERE id = ?", id).Scan(
+	err := db.Conn.QueryRow("SELECT id, title, description, user_id, created_at FROM topics WHERE id = ?", id).Scan(
 		&topic.ID,
 		&topic.Title,
 		&topic.Description,
+		&topic.UserID,
 		&topic.CreatedAt,
 	)
 
@@ -22,7 +23,7 @@ func Get(db *database.Database, id int) (*models.Topic, error) {
 }
 
 func List(db *database.Database) ([]models.Topic, error) {
-	rows, err := db.Conn.Query("SELECT id, title, description, created_at FROM topics")
+	rows, err := db.Conn.Query("SELECT id, title, description, user_id, created_at FROM topics")
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +32,7 @@ func List(db *database.Database) ([]models.Topic, error) {
 	topics := []models.Topic{}
 	for rows.Next() {
 		var t models.Topic
-		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt); err != nil {
+		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.UserID, &t.CreatedAt); err != nil {
 			return nil, err
 		}
 		topics = append(topics, t)
@@ -42,15 +43,16 @@ func List(db *database.Database) ([]models.Topic, error) {
 
 func Create(db *database.Database, topic models.Topic) (*models.Topic, error) {
 	query := `
-		INSERT INTO topics (title, description) 
-		VALUES (?, ?)
-		RETURNING id, title, description, created_at`
+		INSERT INTO topics (title, description, user_id) 
+		VALUES (?, ?, ?)
+		RETURNING id, title, description, user_id, created_at`
 
 	var newTopic models.Topic
-	err := db.Conn.QueryRow(query, topic.Title, topic.Description).Scan(
+	err := db.Conn.QueryRow(query, topic.Title, topic.Description, topic.UserID).Scan(
 		&newTopic.ID,
 		&newTopic.Title,
 		&newTopic.Description,
+		&newTopic.UserID,
 		&newTopic.CreatedAt,
 	)
 
@@ -59,4 +61,9 @@ func Create(db *database.Database, topic models.Topic) (*models.Topic, error) {
 	}
 
 	return &newTopic, nil
+}
+
+func Delete(db *database.Database, id int) error {
+	_, err := db.Conn.Exec("DELETE FROM topics WHERE id = ?", id)
+	return err
 }

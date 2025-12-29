@@ -4,16 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/CVWO/sample-go-app/internal/api"
 	"github.com/CVWO/sample-go-app/internal/dataaccess/comments"
 	"github.com/CVWO/sample-go-app/internal/database"
 	"github.com/CVWO/sample-go-app/internal/models"
+	"github.com/go-chi/chi/v5"
 	"github.com/pkg/errors"
 )
 
 const (
 	CreateComment = "comments.HandleCreate"
+	DeleteComment = "comments.HandleDelete"
 
 	ErrRetrieveDatabase = "Failed to retrieve database in %s"
 	ErrRetrieveComments = "Failed to retrieve comments in %s"
@@ -21,8 +24,11 @@ const (
 	ErrCreateComment    = "Failed to create comment in %s"
 	ErrGetComment       = "Failed to get comment in %s"
 	ErrCreateReq        = "Invalid create comment request in %s"
+	ErrInvalidID        = "Invalid comment id in %s"
+	ErrDeleteComment    = "Failed to delete comment in %s"
 
 	SuccessfulCreateCommentMessage = "Successfully created comment"
+	SuccessfulDeleteCommentMessage = "Successfully deleted comment"
 )
 
 type CommentCreateRequest struct {
@@ -63,5 +69,26 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) (*api.Response, error)
 			Data: data,
 		},
 		Messages: []string{SuccessfulCreateCommentMessage},
+	}, nil
+}
+
+func HandleDelete(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
+	idstr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrInvalidID, DeleteComment))
+	}
+
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrRetrieveDatabase, DeleteComment))
+	}
+
+	if err := comments.Delete(db, id); err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrDeleteComment, DeleteComment))
+	}
+
+	return &api.Response{
+		Messages: []string{SuccessfulDeleteCommentMessage},
 	}, nil
 }

@@ -3,6 +3,7 @@ import type { Topic } from "../types/models";
 
 const ErrFetchTopic = "Error fetching topics"
 const ErrCreateTopic = "Error creating topics"
+const ErrDeleteTopic = "Error deleting topic"
 
 export const getTopic = async (topic_id: string): Promise<Topic> => {
     const response = await fetch(`${BASE_URL}/topics/${topic_id}`, {
@@ -28,7 +29,7 @@ export const getTopics = async (): Promise<Topic[]> => {
     return data.payload.data
 }
 
-export const createTopic = async (topic_Data: {title: string, description: string}) => {
+export const createTopic = async (topic_Data: {title: string, description: string, user_id: number}) => {
     const response = await fetch(`${BASE_URL}/topics`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,6 +37,16 @@ export const createTopic = async (topic_Data: {title: string, description: strin
     })
 
     if (!response.ok) throw Error(ErrCreateTopic)
+
+    return response.json()
+}
+
+export const deleteTopic = async (id: string) => {
+    const response = await fetch(`${BASE_URL}/topics/${id}`, {
+        method:"DELETE",
+    })
+
+    if (!response.ok) throw Error(ErrDeleteTopic)
 
     return response.json()
 }

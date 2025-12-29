@@ -11,7 +11,7 @@ func Setup() chi.Router {
 
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"http://localhost:5173"},
-		AllowedMethods: []string{"GET", "POST"},
+		AllowedMethods: []string{"GET", "POST", "DELETE"},
 	}))
 
 	setUpRoutes(r)

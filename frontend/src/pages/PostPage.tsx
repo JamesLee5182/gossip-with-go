@@ -1,20 +1,23 @@
 import { useParams } from "react-router-dom"
-import {Card, CardContent, Stack, Typography} from "@mui/material"
+import { Card, CardContent, Stack, Typography, Button } from "@mui/material"
 import CreateCommentForm from "../components/CreateCommentForm"
 import CommentList from "../components/CommentList"
 import { useQuery } from '@tanstack/react-query';
-import { getPost } from '../api/posts';
-import PostCard from "../components/PostCard";
+import { deletePost, getPost } from '../api/posts';
+import { useAuth } from '../context/AuthContext';
+import { canDelete } from "../utils/userUtils";
+import DeleteButton from "../components/DeleteButton";
 
-// Shows Post and add comment button at the top and all comments below
 export default function PostPage() {
     const { id } = useParams<{ id: string }>()
+
+    const { user } = useAuth()
 
     const { data: post, isLoading, error } = useQuery({
         queryKey: ['posts', 'detail', id],
         queryFn: () => getPost(id || ""),
         enabled: !!id,
-    });
+    })
 
     if (error) return <div>Error Loading Post</div>
     if (isLoading) return <div>Loading Post</div>
@@ -39,6 +42,15 @@ export default function PostPage() {
 
                 </CardContent>
             </Card>
+
+            {canDelete(user, post) && 
+                <DeleteButton 
+                    item_id={id} 
+                    deleteFn={deletePost} 
+                    navigateAfterDelete={`/topic/${post?.topic_id}`}
+                    queryKey={['posts', 'list', `${id}`]}
+                />
+            }
 
             <CreateCommentForm post_id={post.id}/>
                         

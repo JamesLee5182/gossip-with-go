@@ -20,6 +20,7 @@ const (
 	ListTopics       = "topics.HandleList"
 	ListPostsByTopic = "topics.HandleListPostsByTopic"
 	CreateTopic      = "topics.HandleCreate"
+	DeleteTopic      = "topics.HandleDelete"
 
 	ErrRetrieveDatabase = "Failed to retrieve database in %s"
 	ErrRetrieveTopics   = "Failed to retrieve topics in %s"
@@ -29,11 +30,13 @@ const (
 	ErrGetPosts         = "Failed to get posts of topic in %s"
 	ErrCreateReq        = "Invalid create topic request in %s"
 	ErrInvalidTopicId   = "Invalid topic Id encountered in %s"
+	ErrDeleteTopic      = "Failed to delete topic in %s"
 
 	SuccessfulGetTopicMessage    = "Successfully got topic"
 	SuccessfulListTopicsMessage  = "Successfully listed topics"
 	SuccessfulListPostsMessage   = "Successfully listed posts"
 	SuccessfulCreateTopicMessage = "Successfully created topic"
+	SuccessfulDeleteTopicMessage = "Successfully deleted topic"
 )
 
 func HandleGet(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
@@ -124,6 +127,7 @@ func HandleListPostsByTopic(w http.ResponseWriter, r *http.Request) (*api.Respon
 type CreateTopicRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
+	UserID      int    `json:"user_id"`
 }
 
 func HandleCreate(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
@@ -140,6 +144,7 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) (*api.Response, error)
 	newTopic := models.Topic{
 		Title:       req.Title,
 		Description: req.Description,
+		UserID:      req.UserID,
 	}
 
 	createdTopic, err := topics.Create(db, newTopic)
@@ -157,5 +162,26 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) (*api.Response, error)
 			Data: data,
 		},
 		Messages: []string{SuccessfulCreateTopicMessage},
+	}, nil
+}
+
+func HandleDelete(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
+	idstr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrInvalidTopicId, DeleteTopic))
+	}
+
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrRetrieveDatabase, DeleteTopic))
+	}
+
+	if err := topics.Delete(db, id); err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrDeleteTopic, DeleteTopic))
+	}
+
+	return &api.Response{
+		Messages: []string{SuccessfulDeleteTopicMessage},
 	}, nil
 }

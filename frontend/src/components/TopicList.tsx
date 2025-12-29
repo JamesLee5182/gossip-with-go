@@ -16,7 +16,7 @@ export default function TopicList() {
         <div>
             {topics?.map((topic) => (
                 <div key={topic.id}>
-                    <TopicCard id = {topic.id} title = {topic.title} description = {topic.description} count = {0}/>
+                    <TopicCard id = {topic.id} title = {topic.title} description = {topic.description}/>
                 </div>
             ))}
         </div>

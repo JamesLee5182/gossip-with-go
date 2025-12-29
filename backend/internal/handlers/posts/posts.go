@@ -19,6 +19,7 @@ const (
 	GetPost            = "posts.HandleGet"
 	ListCommentsByPost = "posts.HandleListCommentsByPost"
 	CreatePost         = "posts.HandleCreate"
+	DeletePost         = "posts.HandleDelete"
 
 	ErrRetrieveDatabase = "Failed to retrieve database in %s"
 	ErrRetrievePosts    = "Failed to retrieve posts in %s"
@@ -28,10 +29,12 @@ const (
 	ErrGetComments      = "Failed to get comments in %s"
 	ErrInvalidPostId    = "Invalid post id in %s"
 	ErrCreateReq        = "Invalid create post request in %s"
+	ErrDeletePost       = "Failed to delete post in %s"
 
 	SuccessfulGetPostMessage     = "Successfully got post"
 	SuccessfulGetCommentsMessage = "Successfully got comments"
 	SuccessfulCreatePostMessage  = "Successfully created post"
+	SuccessfulDeletePostMessage  = "Successfully deleted post"
 )
 
 type CreatePostRequest struct {
@@ -134,5 +137,26 @@ func HandleCreate(w http.ResponseWriter, r *http.Request) (*api.Response, error)
 			Data: data,
 		},
 		Messages: []string{SuccessfulCreatePostMessage},
+	}, nil
+}
+
+func HandleDelete(w http.ResponseWriter, r *http.Request) (*api.Response, error) {
+	idstr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrInvalidPostId, DeletePost))
+	}
+
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrRetrieveDatabase, DeletePost))
+	}
+
+	if err := posts.Delete(db, id); err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf(ErrDeletePost, DeletePost))
+	}
+
+	return &api.Response{
+		Messages: []string{SuccessfulDeletePostMessage},
 	}, nil
 }

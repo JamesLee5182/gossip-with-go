@@ -22,7 +22,7 @@ export default function CreatePostForm({ topic_id }: CreatePostProps) {
             createPost(new_Data),
         
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['posts', 'detail', topic_id] });
+            queryClient.invalidateQueries({ queryKey: ['posts', 'list', topic_id] });
 
             setTitle("");
             setContent("");

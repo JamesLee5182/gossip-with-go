@@ -25,6 +25,11 @@ func GetDB() (*Database, error) {
 			return
 		}
 
+		if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+			dbError = err
+			return
+		}
+
 		if err := CreateTables(db); err != nil {
 			dbError = err
 			return
@@ -55,7 +60,10 @@ func CreateTables(db *sql.DB) error {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title TEXT NOT NULL UNIQUE,
 			description TEXT,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			user_id INTEGER NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+			FOREIGN KEY (user_id) REFERENCES users(id)
 		);`,
 
 		`CREATE TABLE IF NOT EXISTS posts (
@@ -65,7 +73,10 @@ func CreateTables(db *sql.DB) error {
 			user_id INTEGER NOT NULL,
 			topic_id INTEGER NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			edited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			edited_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+			FOREIGN KEY (user_id) REFERENCES users(id),
+			FOREIGN KEY (topic_id) REFERENCES topics(id) ON DELETE CASCADE
 		);`,
 
 		`CREATE TABLE IF NOT EXISTS comments (
@@ -74,7 +85,10 @@ func CreateTables(db *sql.DB) error {
 			user_id INTEGER NOT NULL,
 			post_id INTEGER NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-			edited_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			edited_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+			FOREIGN KEY (user_id) REFERENCES users(id),
+			FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 		);`,
 	}
 

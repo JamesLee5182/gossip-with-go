@@ -21,15 +21,17 @@ func GetRoutes() func(r chi.Router) {
 
 		r.Get("/topics", Wrap(topics.HandleList))
 		r.Post("/topics", Wrap(topics.HandleCreate))
-
 		r.Get("/topics/{id}", Wrap(topics.HandleGet))
 		r.Get("/topics/{id}/posts", Wrap(topics.HandleListPostsByTopic))
+		r.Delete("/topics/{id}", Wrap(topics.HandleDelete))
 
 		r.Get("/posts/{id}", Wrap(posts.HandleGet))
 		r.Get("/posts/{id}/comments", Wrap(posts.HandleListCommentsByPost))
 		r.Post("/posts", Wrap(posts.HandleCreate))
+		r.Delete("/posts/{id}", Wrap(posts.HandleDelete))
 
 		r.Post("/comments", Wrap(comments.HandleCreate))
+		r.Delete("/comments/{id}", Wrap(comments.HandleDelete))
 	}
 }
 

@@ -122,3 +122,8 @@ func Create(db *database.Database, post models.Post) (*models.Post, error) {
 
 	return &newPost, nil
 }
+
+func Delete(db *database.Database, id int) error {
+	_, err := db.Conn.Exec("DELETE FROM posts WHERE id = ?", id)
+	return err
+}
